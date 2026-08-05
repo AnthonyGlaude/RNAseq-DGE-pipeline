@@ -1,0 +1,24 @@
+{
+  "path": {
+    "RNAseq_dir": "../data",
+    "chrNameLength": "data/references/star_index/chrNameLength.txt",
+    "star_index": "data/references/star_index/",
+    "transcriptome": "data/references/transcriptome.fa",
+  },
+
+  "fastq": {
+    "url_list": "data/references/fastq_urls.txt",
+    "rename_tsv": "data/references/fastq_rename.tsv",
+    "download_done": "data/references/download_fastq.done",
+    "rename_done": "data/references/rename_fastq.done"
+  },
+
+  "download": {
+    "gtf": "https://ftp.ensembl.org/pub/release-116/gtf/mus_musculus/Mus_musculus.GRCm39.116.gtf.gz",
+    "genome_fa": "https://ftp.ensembl.org/pub/release-116/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz",
+  },
+
+  "dge": {
+    "filter_count_threshold": 10
+  }
+}
