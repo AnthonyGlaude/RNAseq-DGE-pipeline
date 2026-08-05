@@ -1,0 +1,30 @@
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - python=3.12
+  - r-base=4.5
+
+  - r-tidyverse
+  - r-readr
+  - r-stringr
+  - r-xml2
+  - r-ggrepel
+  - r-ggplot2
+  - r-rtsne
+  - r-svglite
+  - r-png
+  - r-dbi
+  - r-igraph
+  - r-ggraph
+
+  - bioconductor-deseq2=1.50.2
+  - bioconductor-tximport
+  - bioconductor-rhdf5
+  - bioconductor-annotationdbi
+  - bioconductor-biomart
+  - bioconductor-org.mm.eg.db=3.22.0
+  - bioconductor-clusterprofiler
+  - bioconductor-enrichplot
+  - bioconductor-dose
