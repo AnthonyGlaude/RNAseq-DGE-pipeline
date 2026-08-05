@@ -1,13 +1,8 @@
-#!/usr/bin/env Rscript
+
 
 # ============================================================
 # 0. Packages
 # ============================================================
-#
-# Les packages doivent être installés AVANT de lancer ce script.
-# Le script vérifie seulement leur présence.
-#
-# Sur Compute Canada :
 #
 # module load r/4.6.1
 # Rscript ce_script.R
@@ -118,15 +113,8 @@ save_interactive_widget <- function(
 # 2. Chemins et paramètres
 # ============================================================
 
-# Chemin local Windows
+# 
 script_dir <- "/home/glaudea/scratch/glaudea/test_souris_rnaseq/RNA_seq-analysis/workflow/results/deseq2"
-
-# Sur Compute Canada, remplace par un chemin Linux, par exemple :
-#
-# script_dir <- paste0(
-#   "/lustre07/scratch/glaudea/glaudea/",
-#   "test_souris_rnaseq/results/deseq2"
-# )
 
 dds_file <- file.path(
   script_dir,
@@ -458,10 +446,10 @@ if (length(missing_groups) > 0) {
 }
 
 # ============================================================
-# 5. Nouveau design DESeq2
+# 5.  DESeq2
 # ============================================================
 #
-# Le design devient :
+# 
 #
 # ~ group
 #
@@ -482,8 +470,7 @@ print(
   resultsNames(dds)
 )
 
-# Sauvegarde du DDS corrigé sans écraser l'original
-
+# 
 corrected_dds_file <- file.path(
   script_dir,
   "dds_group_design.rds"
