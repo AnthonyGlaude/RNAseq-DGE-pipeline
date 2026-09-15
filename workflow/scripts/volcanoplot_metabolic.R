@@ -8,8 +8,6 @@ suppressPackageStartupMessages({
 
 # Inputs and outputs
 stats_file <- snakemake@input[["stats"]]
-enrichr_up_file <- snakemake@input[["enrichr_up"]]
-enrichr_down_file <- snakemake@input[["enrichr_down"]]
 volcano_dir <- dirname(snakemake@output[["lipid_png"]])
 dir.create(volcano_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -88,46 +86,24 @@ x_limit <- ceiling(max_abs_x * 1.05)
 if (x_limit < 1) x_limit <- 1
 cat("Dynamic X limit: ", -x_limit, " to ", x_limit, "\n", sep = "")
 
-# Read Enrichr results
-enrichr_up <- read_csv(enrichr_up_file, show_col_types = FALSE)
-enrichr_down <- read_csv(enrichr_down_file, show_col_types = FALSE)
+# Retrieve all mouse genes annotated to the selected GO BP terms.
+# GOALL includes annotations inherited through descendant GO terms.
+all_go_ids <- unique(c(go_lipid, go_amino_acid, go_glucose))
+go_annotations <- suppressMessages(AnnotationDbi::select(
+  org.Mm.eg.db,
+  keys = all_go_ids,
+  keytype = "GOALL",
+  columns = c("GOALL", "SYMBOL", "ONTOLOGYALL")
+)) %>%
+  filter(ONTOLOGYALL == "BP", !is.na(SYMBOL)) %>%
+  distinct(GOALL, SYMBOL)
 
-find_column <- function(df, candidates) {
-  candidate <- candidates[candidates %in% names(df)]
-  if (length(candidate) == 0) stop("Could not find column among: ", paste(candidates, collapse = ", "))
-  candidate[1]
-}
+lipid_genes <- go_annotations %>% filter(GOALL %in% go_lipid) %>% pull(SYMBOL) %>% unique()
+amino_genes <- go_annotations %>% filter(GOALL %in% go_amino_acid) %>% pull(SYMBOL) %>% unique()
+glucose_genes <- go_annotations %>% filter(GOALL %in% go_glucose) %>% pull(SYMBOL) %>% unique()
 
-term_col <- find_column(enrichr_up, c("Term", "term", "Description", "description"))
-genes_col <- find_column(enrichr_up, c("Genes", "genes", "geneID", "Genes;"))
-
-extract_enrichr_genes <- function(res_table, go_ids, term_col, genes_col) {
-  term_vector <- as.character(res_table[[term_col]])
-  keep <- vapply(term_vector, function(term) {
-    any(vapply(go_ids, function(go) grepl(go, term, fixed = TRUE), logical(1)))
-  }, logical(1))
-
-  rows <- res_table[keep, , drop = FALSE]
-  if (nrow(rows) == 0) return(character(0))
-
-  genes <- trimws(unlist(strsplit(as.character(rows[[genes_col]]), "[;,/]")))
-  unique(genes[!is.na(genes) & genes != ""])
-}
-
-# Extract category genes
-lipid_up <- extract_enrichr_genes(enrichr_up, go_lipid, term_col, genes_col)
-lipid_down <- extract_enrichr_genes(enrichr_down, go_lipid, term_col, genes_col)
-lipid_genes <- unique(c(lipid_up, lipid_down))
 lipid_keys <- toupper(lipid_genes)
-
-amino_up <- extract_enrichr_genes(enrichr_up, go_amino_acid, term_col, genes_col)
-amino_down <- extract_enrichr_genes(enrichr_down, go_amino_acid, term_col, genes_col)
-amino_genes <- unique(c(amino_up, amino_down))
 amino_keys <- toupper(amino_genes)
-
-glucose_up <- extract_enrichr_genes(enrichr_up, go_glucose, term_col, genes_col)
-glucose_down <- extract_enrichr_genes(enrichr_down, go_glucose, term_col, genes_col)
-glucose_genes <- unique(c(glucose_up, glucose_down))
 glucose_keys <- toupper(glucose_genes)
 
 cat(
@@ -170,13 +146,15 @@ make_metabolic_volcano <- function(data, selected_column, output_paths) {
     )
 
   n_selected <- sum(plot_data$selected)
+  n_significant <- sum(plot_data$selected & plot_data$padj < padj_cutoff, na.rm = TRUE)
   n_up <- sum(plot_data$selected & plot_data$padj < padj_cutoff & plot_data$log2FoldChange > 0, na.rm = TRUE)
   n_down <- sum(plot_data$selected & plot_data$padj < padj_cutoff & plot_data$log2FoldChange < 0, na.rm = TRUE)
 
   cat(
     "\n============================================\n", output_paths$label, "\n",
     "============================================\n",
-    "Selected genes : ", n_selected, "\n",
+    "Metabolic genes present : ", n_selected, "\n",
+    "Significant metabolic genes : ", n_significant, "\n",
     "Up             : ", n_up, "\n",
     "Down           : ", n_down, "\n",
     sep = ""
@@ -230,7 +208,7 @@ make_metabolic_volcano <- function(data, selected_column, output_paths) {
   ggsave(output_paths$svg, p, width = 6.4, height = 4.8, bg = "white")
 
   output_table <- plot_data %>%
-    filter(selected) %>%
+    filter(selected, padj < padj_cutoff) %>%
     arrange(padj) %>%
     dplyr::select(ENSEMBL, SYMBOL, baseMean, log2FoldChange, stat, pvalue, padj, lipid, amino_acid, glucose, metabolic_class)
 
