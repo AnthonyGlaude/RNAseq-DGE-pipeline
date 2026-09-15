@@ -143,6 +143,23 @@ rule enrichment_ORA_GSEA_clusterProfiler:
         "../scripts/enrichment_ORA_GSEA_clusterProfiler.R"
 
 
+rule PCA_WT:
+    input:
+        dds=rules.deseq2_analysis.output.dds
+    output:
+        png="results/pca/PCA_HFpEF_WT_vs_Control_WT.png",
+        pdf="results/pca/PCA_HFpEF_WT_vs_Control_WT.pdf",
+        svg="results/pca/PCA_HFpEF_WT_vs_Control_WT.svg",
+        coordinates="results/pca/PCA_HFpEF_WT_vs_Control_WT_coordinates.csv",
+        variance="results/pca/PCA_HFpEF_WT_vs_Control_WT_variance.csv",
+        selected_genes="results/pca/PCA_HFpEF_WT_vs_Control_WT_top1000_genes.csv"
+    conda:
+        "../envs/DESeq2.yml"
+    log:
+        "logs/figures/PCA_WT.log"
+    script:
+        "../scripts/PCA_WT.R"
+
 #######################Reanalysis with wee1-as integrated in annotations ######################
 
 rule feature_counts_wee1as:
