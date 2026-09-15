@@ -130,6 +130,18 @@ rule APJ_apln_boxplot:
         "../scripts/APJ_Apln_boxplot.R"
 
 
+rule enrichment_ORA_GSEA_clusterProfiler:
+    input:
+        stats=rules.deseq2_analysis.output.res_patho_WT
+    output:
+        outdir=directory("results/enrichment_ORA_WT_only")
+    conda:
+        "../envs/DESeq2.yml"
+    log:
+        "logs/enrichment/ORA_GSEA_clusterProfiler.log"
+    script:
+        "../scripts/enrichment_ORA_GSEA_clusterProfiler.R"
+
 
 #######################Reanalysis with wee1-as integrated in annotations ######################
 
