@@ -16,10 +16,10 @@ id_list = sorted([
 
 DGE_COMPARISONS = [
     "HFpEF_WT-Control_WT",
-    "Control_KO-Control_WT",
-    "condition_genotype_interaction",
-    "HFpEF_KO-Control_KO",
-    "HFpEF_KO-HFpEF_WT"
+#    "Control_KO-Control_WT",
+#    "condition_genotype_interaction",
+#    "HFpEF_KO-Control_KO",
+#    "HFpEF_KO-HFpEF_WT"
 ]
 
 
