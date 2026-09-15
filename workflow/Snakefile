@@ -40,13 +40,14 @@ rule all:
 
 rule analysis:
     """
-    Cible d'agrégation pour lancer les analyses en aval de l'alignement
-    (featureCounts, QC discordance) indépendamment du pipeline d'alignement.
+    Lance toutes les analyses WT en aval de l'alignement.
     """
     input:
-        "results/featurecounts/counts_merged.txt",
-        "results/deseq2/HFpEF_WT-Control_WT_DESeq2_gene.csv",
-        expand("results/deg_lists/{comp}_all_DEG.tsv", comp=DGE_COMPARISONS)
+        rules.global_volcano.output,
+        rules.metabolic_volcano.output,
+        rules.APJ_apln_boxplot.output,
+        rules.PCA_WT.output,
+        rules.enrichment_ORA_GSEA_clusterProfiler.output
 
 
 
