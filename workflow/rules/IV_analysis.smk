@@ -1,5 +1,5 @@
-CONDITIONS = ["Control_KO", "Control_WT", "HFpEF_KO", "HFpEF_WT"]
-
+#CONDITIONS = ["Control_KO", "Control_WT", "HFpEF_KO", "HFpEF_WT"]
+CONDITIONS = ["Control_WT","HFpEF_WT"]
 rule feature_counts:
     input:
         bams = lambda wc: expand(
@@ -56,10 +56,10 @@ rule deseq2_analysis:
         metadata = "data/references/sample_metadata.tsv"
     output:
         res_patho_WT = "results/deseq2/HFpEF_WT-Control_WT_DESeq2_gene.csv",
-        res_KO_chow = "results/deseq2/Control_KO-Control_WT_DESeq2_gene.csv",
-        res_interaction = "results/deseq2/condition_genotype_interaction_DESeq2_gene.csv",
-        res_patho_KO = "results/deseq2/HFpEF_KO-Control_KO_DESeq2_gene.csv",
-        res_KO_patho = "results/deseq2/HFpEF_KO-HFpEF_WT_DESeq2_gene.csv",
+#        res_KO_chow = "results/deseq2/Control_KO-Control_WT_DESeq2_gene.csv",
+#        res_interaction = "results/deseq2/condition_genotype_interaction_DESeq2_gene.csv",
+#        res_patho_KO = "results/deseq2/HFpEF_KO-Control_KO_DESeq2_gene.csv",
+#        res_KO_patho = "results/deseq2/HFpEF_KO-HFpEF_WT_DESeq2_gene.csv",
         dds = "results/deseq2/dds.rds"
     params:
         outdir = "results/deseq2",
