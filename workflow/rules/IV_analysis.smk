@@ -72,47 +72,63 @@ rule deseq2_analysis:
         "../scripts/deseq2_analysis.R"
 
 
-
-rule deseq2_stats:
-    """
-    Analyses post-DESeq2 pour chaque contraste :
-    tableau annoté, volcano plots et enrichissements GO.
-    """
+rule volcano_global:
     input:
-        deseq2 = "results/deseq2/{comp}_DESeq2_gene.csv"
+        stats=rules.deseq2_analysis.output.res_patho_WT
     output:
-        stat = "results/deseq2_stats/{comp}_stats.csv",
-        volcano_total = "results/volcano/{comp}_volcano_total.png",
-        volcano_zoom = "results/volcano/{comp}_volcano_zoom.png",
+        fdr_png="results/volcanoplot/01_global_volcano_FDR_only.png",
+        fdr_pdf="results/volcanoplot/01_global_volcano_FDR_only.pdf",
+        fdr_svg="results/volcanoplot/01_global_volcano_FDR_only.svg",
 
-        deg_total = "results/deg_lists/{comp}_all_DEG.tsv",
-        deg_up = "results/deg_lists/{comp}_upregulated.tsv",
-        deg_down = "results/deg_lists/{comp}_downregulated.tsv",
+        fc_png="results/volcanoplot/02_global_volcano_FDR_FC1.2.png",
+        fc_pdf="results/volcanoplot/02_global_volcano_FDR_FC1.2.pdf",
+        fc_svg="results/volcanoplot/02_global_volcano_FDR_FC1.2.svg",
 
-        go_total = "results/go/{comp}_GO_all.png",
-        go_enrich_up = "results/go/{comp}_GO_up.png",
-        go_enrich_down = "results/go/{comp}_GO_down.png"
-    log:
-        "logs/deseq2/stats_{comp}.log"
+        counts="results/volcanoplot/00_global_volcano_counts.csv"
     conda:
         "../envs/DESeq2.yml"
-    script:
-        "../scripts/deseq2_stats.R"
-
-
-rule PCA_MA_Scatter_plot_deseq2:
-    input:
-        dds = rule.deseq2_analysis.output.dds
-    output:
-        pca = "results/figure/total_pca.png"
-        scatter = "results/figure/{comp}_scatter.png"
-        ma = "results/figure/{comp}_ma.png"
     log:
-        "logs/deseq2/figures_{comp}.log"
+        "logs/figures/volcano_global.log"
+    script:
+        "../scripts/volcano_global.R"
+
+
+rule volcano_metabolics:
+    input:
+        stats=rules.deseq2_analysis.output.res_patho_WT
+    output:
+        fdr_png="results/volcanoplot/01_metabolics_volcano_FDR_only.png",
+        fdr_pdf="results/volcanoplot/01_metabolics_volcano_FDR_only.pdf",
+        fdr_svg="results/volcanoplot/01_metabolics_volcano_FDR_only.svg",
+
+        fc_png="results/volcanoplot/02_metabolics_volcano_FDR_FC1.2.png",
+        fc_pdf="results/volcanoplot/02_metabolics_volcano_FDR_FC1.2.pdf",
+        fc_svg="results/volcanoplot/02_metabolics_volcano_FDR_FC1.2.svg",
+
+        counts="results/volcanoplot/00_metabolics_volcano_counts.csv"
     conda:
         "../envs/DESeq2.yml"
+    log:
+        "logs/figures/volcano_metabolics.log"
     script:
-        "../scripts/figures.R"
+        "../scripts/volcano_metabolics.R"
+
+rule APJ_apln_boxplot:
+    input:
+        dds=rules.deseq2_analysis.output.dds,
+        stats=rules.deseq2_analysis.output.res_patho_WT
+    output:
+        png="results/boxplots/Aplnr_Apln_WT_boxplot.png",
+        pdf="results/boxplots/Aplnr_Apln_WT_boxplot.pdf",
+        svg="results/boxplots/Aplnr_Apln_WT_boxplot.svg",
+        xlsx="results/boxplots/Aplnr_Apln_WT_normalized_counts.xlsx"
+    conda:
+        "../envs/DESeq2.yml"
+    log:
+        "logs/figures/APJ_Apln_boxplot.log"
+    script:
+        "../scripts/APJ_Apln_boxplot.R"
+
 
 
 #######################Reanalysis with wee1-as integrated in annotations ######################
